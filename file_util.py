@@ -1,5 +1,6 @@
 import os
 
+tab = "-" * 4  #variable for showing hierarchy of the files
 # variables for files, images, videos and music
 text_file_extensions_dict = {
     ".txt": "Plain text file",
@@ -78,7 +79,8 @@ music_file_extensions_dict = {
 }
 
 
-def count_dir(list_input, base_directory):  #takes a list of strings, and the base directory and counts the number of directories
+def count_dir(list_input,
+              base_directory):  #takes a list of strings, and the base directory and counts the number of directories
     count = 0
     directories = []
     not_directories = []
@@ -89,13 +91,10 @@ def count_dir(list_input, base_directory):  #takes a list of strings, and the ba
         else:
             not_directories.append(base_directory + each)
 
-    print(f"\tDirectories ({count}):")
-    for each in directories:
-        print(f'\t\t{each}')
-    # print(f"\tNOT Directories:")
+    # print(f"{tab}NOT Directories:")
     # for each in not_directories:
-    #     print(f'\t\t{each}')
-    return count, not_directories
+    #     print(f'{tab*2}{each}')
+    return count, directories, not_directories
 
 
 def sort_files(list_input):
@@ -123,8 +122,10 @@ def sort_files(list_input):
         start_index = each.rfind(".")
         if start_index > 0:  #this means the index is found
             extension = each[start_index:].lower()  #this is a string that contains the extension of the file
+            #file_size = os.path.getsize(each) #this will give the file size
             if text_file_extensions_dict.get(extension, 0) != 0:
                 list_text_files.append(each)
+                #get the file size (?)
                 count_text += 1
             elif music_file_extensions_dict.get(extension, 0) != 0:
                 list_audio_files.append(each)
@@ -144,29 +145,29 @@ def sort_files(list_input):
         else:
             continue
 
-    print(f"\tText Based Files ({count_text}):")
-    for each in list_text_files:
-        print(f'\t\t{each}')
-
-    print(f"\tAudio Files ({count_audio}):")
-    for each in list_audio_files:
-        print(f'\t\t{each}')
-
-    print(f"\tData Files ({count_data}):")
-    for each in list_data_files:
-        print(f'\t\t{each}')
-
-    print(f"\tVideo Files ({count_video}):")
-    for each in list_video_files:
-        print(f'\t\t{each}')
-
-    print(f"\tImage Files ({count_image}):")
-    for each in list_image_files:
-        print(f'\t\t{each}')
-
-    print(f"\tOther Files ({count_other}):")
-    for each in list_other_files:
-        print(f'\t\t{each}')
+    # print(f"{tab}Text Based Files ({count_text}):")
+    # for each in list_text_files:
+    #     print(f'{tab * 2}{each}')
+    # print()
+    # print(f"{tab}Audio Files ({count_audio}):")
+    # for each in list_audio_files:
+    #     print(f'{tab * 2}{each}')
+    # print()
+    # print(f"{tab}Data Files ({count_data}):")
+    # for each in list_data_files:
+    #     print(f'{tab * 2}{each}')
+    # print()
+    # print(f"{tab}Video Files ({count_video}):")
+    # for each in list_video_files:
+    #     print(f'{tab * 2}{each}')
+    # print()
+    # print(f"{tab}Image Files ({count_image}):")
+    # for each in list_image_files:
+    #     print(f'{tab * 2}{each}')
+    # print()
+    # print(f"{tab}Other Files ({count_other}):")
+    # for each in list_other_files:
+    #     print(f'{tab * 2}{each}')
 
     sorted_files = {
         "audio": {
@@ -197,33 +198,12 @@ def sort_files(list_input):
 
     return sorted_files
 
-# def count_dat(list_input, base_directory):
-#     count = 0
-#     data_files = []
-#     not_data_files = []
-#     for each in list_input:
-#         #find the index of the last period using rfind(), returns -1 if the '.' isn't found
-#         start_index = each.rfind(".")
-#         if start_index > 0:  #this means the index is found
-#             extension = each[start_index:]  #this is a string that contains the extension of the file
-#             if text_file_extensions_dict.get(extension, 0) != 0:
-#                 text_files.append(base_directory + each)
-#                 count += 1
-#             else:
-#                 not_text_files.append(base_directory + each)
-#         else:
-#             continue
-#     print(f"\tText Based Files:")
-#     for each in text_files:
-#         print(f'\t\t{each}')
-#     print(f"\tNOT Text Based Files:")
-#     for each in not_text_files:
-#         print(f'\t\t{each}')
-#     return count, not_text_files
 
-# def count_vid(list_input, base_directory):
-#     pass
-#
-#
-# def count_aud(list_input, base_directory):
-#     pass
+def get_total_file_size(list_input):  #takes a list of full paths and returns the total size in MB
+    total = 0
+    for each in list_input:  #go through each list
+        total += os.path.getsize(each)
+
+    #total is in bytes, convert to MB
+    total = round(total/1000000, 2)
+    return total
