@@ -63,7 +63,7 @@ def main():
         size_other = file_util.get_total_file_size(list_other_files)
 
         response = input(
-"""Choose from the following options:
+            """Choose from the following options:
 - Type 'summary' to view summary for all the file types
 - Type in the file type (ex, 'AUDIO') to see the files
 - Type 'clean' to move all these files and place them in their respective folders
@@ -136,6 +136,7 @@ def main():
             print(f"{tab}Number of DATA (CSV, XLS, etc) files: {count_data}, total size: {size_data} MB")
             print(f"{tab}Number of other files: {count_other}, total size: {size_other} MB")
             print()
+
         elif response == 'clean':
             #make directories for each of the type of files that have sizes
             var_data = 'data'
@@ -144,64 +145,293 @@ def main():
             var_video = 'video'
             var_text = 'text'
             var_other = 'other'
-            folder_iterator = 0
+            folder_iterator = 0  #use this to append to a folder
 
             #check and see which directories to make based on the count of the files
             if count_audio > 0:
                 #check if the folder is already created using os.path.exists(dir_for_clean+var_audio)
+                folder_append = 1  # this is to append to the folder if one is already created
+                if os.path.exists(dir_for_clean + var_audio.upper()):
+                    r = input(f'Folder {var_audio.upper()} exists.\nMove files into the existing {var_audio.upper()} or create a new folder (\'existing\'/\'new\')? ').lower()
 
-                os.mkdir(dir_for_clean + var_audio)
-                for each_file in sorted_files[var_audio]["content"]:
-                    insert_index = each_file.rfind("\\")
-                    each_file_move = each_file[:insert_index] + "\\" + var_audio.upper() + each_file[insert_index:]
-                    print(f"Moving {each_file} to {var_audio} folder...")
-                    os.replace(each_file, each_file_move)
+                    if r in ['existing', 'e']:  #user would like to merge the folder
+                        print(f'Moving {var_audio} files into current {var_audio.upper()} folder.')
+                        for each_file in sorted_files[var_audio]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_audio.upper() + each_file[
+                                                                                                   insert_index:]
+                            print(f"Moving {each_file} to {var_audio.upper()} folder...")
+                            os.replace(each_file, each_file_move) #moving the actual files
+
+                    elif r in ['new','n']:
+                        while True:
+                            if os.path.exists(dir_for_clean + var_audio.upper() + str(folder_append)):
+                                #folder exists, so continue and up folder_append
+                                folder_append += 1
+                            else:
+                                #at this point, the folder should not exist and can be created
+                                print(f"Creating a new directory called {var_audio.upper() + str(folder_append)}...")
+                                new_folder = dir_for_clean + var_audio.upper() + str(folder_append)
+                                os.mkdir(new_folder)
+                                break #exit the loop
+
+                        for each_file in sorted_files[var_audio]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_audio.upper() + str(folder_append) + each_file[
+                                                                                                   insert_index:]
+                            print(f"Moving {each_file} to {new_folder} folder...")
+                            os.replace(each_file, each_file_move) #moving the actual files
+                    else:
+                        print(f"Invalid response. Try again. ")
+
+                else:
+                    print(f'Moving {var_audio} files into current {var_audio.upper()} folder.')
+                    for each_file in sorted_files[var_audio]["content"]:
+                        insert_index = each_file.rfind("\\")
+                        each_file_move = each_file[:insert_index] + "\\" + var_audio.upper() + each_file[
+                                                                                               insert_index:]
+                        print(f"Moving {each_file} to {var_audio.upper} folder...")
+                        os.replace(each_file, each_file_move)  # moving the actual files
 
             if count_data > 0:
-                os.mkdir(dir_for_clean + var_data) #create the folder
-                for each_file in sorted_files[var_data]["content"]:
-                    insert_index = each_file.rfind("\\")
-                    each_file_move = each_file[:insert_index] + "\\" + var_data + each_file[insert_index:]
-                    print(f"Moving {each_file} to {var_data} folder...")
-                    os.replace(each_file, each_file_move) #move the files to the newly created folder
+                # check if the folder is already created using os.path.exists(dir_for_clean+var_data)
+                folder_append = 1  # this is to append to the folder if one is already created
+                if os.path.exists(dir_for_clean + var_data.upper()):
+                    r = input(
+                        f'Folder {var_data.upper()} exists.\nMove files into the existing {var_data.upper()} or create a new folder (\'existing\'/\'new\')? ').lower()
+
+                    if r in ['existing', 'e']:  # user would like to merge the folder
+                        print(f'Moving {var_data} files into current {var_data.upper()} folder.')
+                        for each_file in sorted_files[var_data]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_data.upper() + each_file[
+                                                                                                   insert_index:]
+                            print(f"Moving {each_file} to {var_data.upper()} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+
+                    elif r in ['new', 'n']:
+                        while True:
+                            if os.path.exists(dir_for_clean + var_data.upper() + str(folder_append)):
+                                # folder exists, so continue and up folder_append
+                                folder_append += 1
+                            else:
+                                # at this point, the folder should not exist and can be created
+                                print(f"Creating a new directory called {var_data.upper() + str(folder_append)}...")
+                                new_folder = dir_for_clean + var_data.upper() + str(folder_append)
+                                os.mkdir(new_folder)
+                                break  # exit the loop
+
+                        for each_file in sorted_files[var_data]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_data.upper() + str(
+                                folder_append) + each_file[
+                                                 insert_index:]
+                            print(f"Moving {each_file} to {new_folder} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+                    else:
+                        print(f"Invalid response. Try again. ")
+
+                else:
+                    print(f'Moving {var_data} files into current {var_data.upper()} folder.')
+                    for each_file in sorted_files[var_data]["content"]:
+                        insert_index = each_file.rfind("\\")
+                        each_file_move = each_file[:insert_index] + "\\" + var_data.upper() + each_file[
+                                                                                               insert_index:]
+                        print(f"Moving {each_file} to {var_data.upper()} folder...")
+                        os.replace(each_file, each_file_move)  # moving the actual files
 
             if count_video > 0:
-                os.mkdir(dir_for_clean + var_video)
-                for each_file in sorted_files[var_video]["content"]:
-                    insert_index = each_file.rfind("\\")
-                    each_file_move = each_file[:insert_index] + "\\" + var_video + each_file[insert_index:]
-                    print(f"Moving {each_file} to {var_video} folder...")
-                    os.replace(each_file, each_file_move)
+                # check if the folder is already created using os.path.exists(dir_for_clean+var_video)
+                folder_append = 1  # this is to append to the folder if one is already created
+                if os.path.exists(dir_for_clean + var_video.upper()):
+                    r = input(
+                        f'Folder {var_video.upper()} exists.\nMove files into the existing {var_video.upper()} or create a new folder (\'existing\'/\'new\')? ').lower()
+
+                    if r in ['existing', 'e']:  # user would like to merge the folder
+                        print(f'Moving {var_video} files into current {var_video.upper()} folder.')
+                        for each_file in sorted_files[var_video]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_video.upper() + each_file[
+                                                                                                   insert_index:]
+                            print(f"Moving {each_file} to {var_video.upper()} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+
+                    elif r in ['new', 'n']:
+                        while True:
+                            if os.path.exists(dir_for_clean + var_video.upper() + str(folder_append)):
+                                # folder exists, so continue and up folder_append
+                                folder_append += 1
+                            else:
+                                # at this point, the folder should not exist and can be created
+                                print(f"Creating a new directory called {var_video.upper() + str(folder_append)}...")
+                                new_folder = dir_for_clean + var_video.upper() + str(folder_append)
+                                os.mkdir(new_folder)
+                                break  # exit the loop
+
+                        for each_file in sorted_files[var_video]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_video.upper() + str(
+                                folder_append) + each_file[
+                                                 insert_index:]
+                            print(f"Moving {each_file} to {new_folder} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+                    else:
+                        print(f"Invalid response. Try again. ")
+
+                else:
+                    print(f'Moving {var_video} files into current {var_video.upper()} folder.')
+                    for each_file in sorted_files[var_video]["content"]:
+                        insert_index = each_file.rfind("\\")
+                        each_file_move = each_file[:insert_index] + "\\" + var_video.upper() + each_file[
+                                                                                               insert_index:]
+                        print(f"Moving {each_file} to {var_video.upper()} folder...")
+                        os.replace(each_file, each_file_move)  # moving the actual files
 
             if count_text > 0:
-                os.mkdir(dir_for_clean + var_text)
-                for each_file in sorted_files[var_text]["content"]:
-                    insert_index = each_file.rfind("\\")
-                    each_file_move = each_file[:insert_index] + "\\" + var_text + each_file[insert_index:]
-                    print(f"Moving {each_file} to {var_text} folder...")
-                    os.replace(each_file, each_file_move)
+                # check if the folder is already created using os.path.exists(dir_for_clean+var_text)
+                folder_append = 1  # this is to append to the folder if one is already created
+                if os.path.exists(dir_for_clean + var_text.upper()):
+                    r = input(
+                        f'Folder {var_text.upper()} exists.\nMove files into the existing {var_text.upper()} or create a new folder (\'existing\'/\'new\')? ').lower()
+
+                    if r in ['existing', 'e']:  # user would like to merge the folder
+                        print(f'Moving {var_text} files into current {var_text.upper()} folder.')
+                        for each_file in sorted_files[var_text]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_text.upper() + each_file[
+                                                                                                   insert_index:]
+                            print(f"Moving {each_file} to {var_text.upper()} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+
+                    elif r in ['new', 'n']:
+                        while True:
+                            if os.path.exists(dir_for_clean + var_text.upper() + str(folder_append)):
+                                # folder exists, so continue and up folder_append
+                                folder_append += 1
+                            else:
+                                # at this point, the folder should not exist and can be created
+                                print(f"Creating a new directory called {var_text.upper() + str(folder_append)}...")
+                                new_folder = dir_for_clean + var_text.upper() + str(folder_append)
+                                os.mkdir(new_folder)
+                                break  # exit the loop
+
+                        for each_file in sorted_files[var_text]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_text.upper() + str(
+                                folder_append) + each_file[
+                                                 insert_index:]
+                            print(f"Moving {each_file} to {new_folder} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+                    else:
+                        print(f"Invalid response. Try again. ")
+
+                else:
+                    print(f'Moving {var_text} files into current {var_text.upper()} folder.')
+                    for each_file in sorted_files[var_text]["content"]:
+                        insert_index = each_file.rfind("\\")
+                        each_file_move = each_file[:insert_index] + "\\" + var_text.upper() + each_file[
+                                                                                               insert_index:]
+                        print(f"Moving {each_file} to {var_text.upper()} folder...")
+                        os.replace(each_file, each_file_move)  # moving the actual files
 
             if count_other > 0:
-                os.mkdir(dir_for_clean + var_other)
-                for each_file in sorted_files[var_other]["content"]:
-                    insert_index = each_file.rfind("\\")
-                    each_file_move = each_file[:insert_index] + "\\" + var_other + each_file[insert_index:]
-                    print(f"Moving {each_file} to {var_other} folder...")
-                    os.replace(each_file, each_file_move)
+                # check if the folder is already created using os.path.exists(dir_for_clean+var_other)
+                folder_append = 1  # this is to append to the folder if one is already created
+                if os.path.exists(dir_for_clean + var_other.upper()):
+                    r = input(
+                        f'Folder {var_other.upper()} exists.\nMove files into the existing {var_other.upper()} or create a new folder (\'existing\'/\'new\')? ').lower()
+
+                    if r in ['existing', 'e']:  # user would like to merge the folder
+                        print(f'Moving {var_other} files into current {var_other.upper()} folder.')
+                        for each_file in sorted_files[var_other]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_other.upper() + each_file[
+                                                                                                   insert_index:]
+                            print(f"Moving {each_file} to {var_other.upper()} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+
+                    elif r in ['new', 'n']:
+                        while True:
+                            if os.path.exists(dir_for_clean + var_other.upper() + str(folder_append)):
+                                # folder exists, so continue and up folder_append
+                                folder_append += 1
+                            else:
+                                # at this point, the folder should not exist and can be created
+                                print(f"Creating a new directory called {var_other.upper() + str(folder_append)}...")
+                                new_folder = dir_for_clean + var_other.upper() + str(folder_append)
+                                os.mkdir(new_folder)
+                                break  # exit the loop
+
+                        for each_file in sorted_files[var_other]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_other.upper() + str(
+                                folder_append) + each_file[
+                                                 insert_index:]
+                            print(f"Moving {each_file} to {new_folder} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+                    else:
+                        print(f"Invalid response. Try again. ")
+
+                else:
+                    print(f'Moving {var_other} files into current {var_other.upper()} folder.')
+                    for each_file in sorted_files[var_other]["content"]:
+                        insert_index = each_file.rfind("\\")
+                        each_file_move = each_file[:insert_index] + "\\" + var_other.upper() + each_file[
+                                                                                               insert_index:]
+                        print(f"Moving {each_file} to {var_other.upper()} folder...")
+                        os.replace(each_file, each_file_move)  # moving the actual files
 
             if count_image > 0:
-                os.mkdir(dir_for_clean + var_image)
-                for each_file in sorted_files[var_image]["content"]:
-                    insert_index = each_file.rfind("\\")
-                    each_file_move = each_file[:insert_index] + "\\" + var_image + each_file[insert_index:]
-                    print(f"Moving {each_file} to {var_image} folder...")
-                    os.replace(each_file, each_file_move)
+                # check if the folder is already created using os.path.exists(dir_for_clean+var_image)
+                folder_append = 1  # this is to append to the folder if one is already created
+                if os.path.exists(dir_for_clean + var_image.upper()):
+                    r = input(
+                        f'Folder {var_image.upper()} exists.\nMove files into the existing {var_image.upper()} or create a new folder (\'existing\'/\'new\')? ').lower()
+
+                    if r in ['existing', 'e']:  # user would like to merge the folder
+                        print(f'Moving {var_image} files into current {var_image.upper()} folder.')
+                        for each_file in sorted_files[var_image]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_image.upper() + each_file[
+                                                                                                   insert_index:]
+                            print(f"Moving {each_file} to {var_image.upper()} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+
+                    elif r in ['new', 'n']:
+                        while True:
+                            if os.path.exists(dir_for_clean + var_image.upper() + str(folder_append)):
+                                # folder exists, so continue and up folder_append
+                                folder_append += 1
+                            else:
+                                # at this point, the folder should not exist and can be created
+                                print(f"Creating a new directory called {var_image.upper() + str(folder_append)}...")
+                                new_folder = dir_for_clean + var_image.upper() + str(folder_append)
+                                os.mkdir(new_folder)
+                                break  # exit the loop
+
+                        for each_file in sorted_files[var_image]["content"]:
+                            insert_index = each_file.rfind("\\")
+                            each_file_move = each_file[:insert_index] + "\\" + var_image.upper() + str(
+                                folder_append) + each_file[
+                                                 insert_index:]
+                            print(f"Moving {each_file} to {new_folder} folder...")
+                            os.replace(each_file, each_file_move)  # moving the actual files
+                    else:
+                        print(f"Invalid response. Try again. ")
+
+                else:
+                    print(f'Moving {var_image} files into current {var_image.upper()} folder.')
+                    for each_file in sorted_files[var_image]["content"]:
+                        insert_index = each_file.rfind("\\")
+                        each_file_move = each_file[:insert_index] + "\\" + var_image.upper() + each_file[
+                                                                                               insert_index:]
+                        print(f"Moving {each_file} to {var_image.upper()} folder...")
+                        os.replace(each_file, each_file_move)  # moving the actual files
 
             print("\nCleaning complete!\n")
-            #need to refresh the contents of the directory
 
         else:
             print("Invalid response. Try again.\n")
 
 
-main()
+main()  #run program
